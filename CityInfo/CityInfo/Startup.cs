@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 
@@ -13,13 +14,13 @@ namespace CityInfo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc()
-            //    .AddJsonOptions(opt =>
-            //{
-            //    var reslv = opt.SerializerSettings.ContractResolver as DefaultContractResolver;
-            //    if (reslv == null) return;
+                .AddMvcOptions(opt => opt.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter()))
+                //.AddJsonOptions(opt =>
+                //{
+                //    if (!(opt.SerializerSettings.ContractResolver is DefaultContractResolver reslv)) return;
 
-            //    reslv.NamingStrategy = null;
-            //})
+                //    reslv.NamingStrategy = null;
+                //})
             ;
         }
 
