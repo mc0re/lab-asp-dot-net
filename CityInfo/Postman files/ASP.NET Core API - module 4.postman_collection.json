@@ -1,0 +1,62 @@
+{
+	"info": {
+		"_postman_id": "c673225b-2829-426e-9363-cf8b6cf62eb5",
+		"name": "ASP.NET Core API - module 4",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET Points of Interest",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:1028/api/cities/5/poi",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1028",
+					"path": [
+						"api",
+						"cities",
+						"5",
+						"poi"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE Point of Interest",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:1028/api/cities/1/poi/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1028",
+					"path": [
+						"api",
+						"cities",
+						"1",
+						"poi",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
