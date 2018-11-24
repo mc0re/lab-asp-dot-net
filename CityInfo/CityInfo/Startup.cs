@@ -1,9 +1,11 @@
-﻿using CityInfo.Models;
+﻿using CityInfo.Entities;
+using CityInfo.Models;
 using CityInfo.Services;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -38,6 +40,8 @@ namespace CityInfo
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<PoiValidator>())
             ;
             services.AddTransient<ISenderService, LocalMailService>();
+            var connString = Configuration["DatabaseConnection:CityInfo"];
+            services.AddDbContext<CityInfoContext>(opt => opt.UseSqlServer(connString));
         }
 
 
