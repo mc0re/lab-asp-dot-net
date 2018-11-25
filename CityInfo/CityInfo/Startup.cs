@@ -1,4 +1,5 @@
-﻿using CityInfo.Entities;
+﻿using AutoMapper;
+using CityInfo.Entities;
 using CityInfo.Models;
 using CityInfo.Services;
 using FluentValidation.AspNetCore;
@@ -42,6 +43,7 @@ namespace CityInfo
             services.AddTransient<ISenderService, LocalMailService>();
             var connString = Configuration["DatabaseConnection:CityInfo"];
             services.AddDbContext<CityInfoContext>(opt => opt.UseSqlServer(connString));
+            services.AddScoped<ICityInfoRepository, CityInfoRepository>();
         }
 
 
@@ -74,10 +76,15 @@ namespace CityInfo
                 //}
                 );
 
-            //app.Run(async (context) =>
-            //{
-            //    await context.Response.WriteAsync("Hello World!");
-            //});
+            Mapper.Initialize(cfg =>
+            {
+                cfg.CreateMap<City, CityNoPoiDto>();
+                cfg.CreateMap<City, CityDto>();
+                cfg.CreateMap<Poi, PoiDto>();
+                cfg.CreateMap<Poi, PoiUpdateDto>();
+                cfg.CreateMap<PoiNewDto, Poi>();
+                cfg.CreateMap<PoiUpdateDto, Poi>();
+            });
         }
     }
 }

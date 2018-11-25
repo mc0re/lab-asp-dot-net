@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using CityInfo.Models;
+using CityInfo.Services;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CityInfo.Controllers
@@ -6,20 +10,48 @@ namespace CityInfo.Controllers
     [Route("api/cities")]
     public class CitiesController : Controller
     {
+        #region Fields
+
+        private ICityInfoRepository mCityRepo;
+
+        #endregion
+
+
+        #region Init and clean-up
+
+        public CitiesController(ICityInfoRepository cityRepo)
+        {
+            mCityRepo = cityRepo;
+        }
+
+        #endregion
+
+
+        #region HTTP requests
+
         [HttpGet]
         public IActionResult GetCities()
         {
-            return Ok(CitiesDataStore.Current.Cities);
+            return Ok(Mapper.Map<IEnumerable<CityNoPoiDto>>(mCityRepo.GetCities()));
         }
 
 
         [HttpGet("{id}")]
-        public IActionResult GetCity(int id)
+        public IActionResult GetCity(int id, bool includePois = false)
         {
-            var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == id);
+            var city = mCityRepo.GetCity(id, includePois);
             if (city == null) return NotFound();
 
-            return Ok(city);
+            if (includePois)
+            {
+                return Ok(Mapper.Map<CityDto>(city));
+            }
+            else
+            {
+                return Ok(Mapper.Map<CityNoPoiDto>(city));
+            }
         }
+
+        #endregion
     }
 }

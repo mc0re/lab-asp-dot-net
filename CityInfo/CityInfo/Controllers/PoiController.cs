@@ -1,9 +1,12 @@
-﻿using CityInfo.Models;
+﻿using AutoMapper;
+using CityInfo.Entities;
+using CityInfo.Models;
 using CityInfo.Services;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CityInfo.Controllers
@@ -17,6 +20,8 @@ namespace CityInfo.Controllers
 
         private ISenderService mSender;
 
+        private ICityInfoRepository mCityRepo;
+
         private static CityDto GetCityOrNothing(int cityId)
         {
             return CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
@@ -27,10 +32,11 @@ namespace CityInfo.Controllers
 
         #region Init and clean-up
 
-        public PoiController(ILogger<PoiController> logger, ISenderService sender)
+        public PoiController(ILogger<PoiController> logger, ISenderService sender, ICityInfoRepository cityRepo)
         {
             mLogger = logger;
             mSender = sender;
+            mCityRepo = cityRepo;
         }
 
         #endregion
@@ -41,27 +47,23 @@ namespace CityInfo.Controllers
         [HttpGet("{cityId}/poi")]
         public IActionResult GetPois(int cityId)
         {
-            var city = GetCityOrNothing(cityId);
-            if (city == null)
+            if (! mCityRepo.DoesCityExist(cityId))
             {
                 mLogger.LogInformation($"City {cityId} not found.");
                 return NotFound();
             }
 
-            return Ok(city.Poi);
+            return Ok(Mapper.Map<IEnumerable<PoiDto>>(mCityRepo.GetPois(cityId)));
         }
 
 
         [HttpGet("{cityId}/poi/{id}", Name = "GetPoi")]
         public IActionResult GetPoi(int cityId, int id)
         {
-            var city = GetCityOrNothing(cityId);
-            if (city == null) return NotFound();
-
-            var poi = city.Poi.FirstOrDefault(p => p.Id == id);
+            var poi = mCityRepo.GetPoi(cityId, id);
             if (poi == null) return NotFound();
 
-            return Ok(poi);
+            return Ok(Mapper.Map<PoiDto>(poi));
         }
 
 
@@ -82,21 +84,21 @@ namespace CityInfo.Controllers
                 return BadRequest(ModelState);
             }
 
-            var city = GetCityOrNothing(cityId);
-            if (city == null) return NotFound();
-
-            var nextId = CitiesDataStore.Current.Cities.SelectMany(c => c.Poi).Max(p => p.Id) + 1;
-
-            var res = new PoiDto
+            if (!mCityRepo.DoesCityExist(cityId))
             {
-                Id = nextId,
-                Name = poi.Name,
-                Description = poi.Description
-            };
+                return NotFound(new { CityId = cityId });
+            }
 
-            city.Poi.Add(res);
+            var inputPoi = Mapper.Map<Poi>(poi);
+            this.mCityRepo.AddPoi(cityId, inputPoi);
 
-            return CreatedAtRoute("GetPoi", new { cityId = city.Id, id = nextId }, res);
+            if (! mCityRepo.Save())
+            {
+                return StatusCode(500, "Problem occured while saving to the database.");
+            }
+
+            var createdPoi = Mapper.Map<PoiDto>(inputPoi);
+            return CreatedAtRoute("GetPoi", new { cityId = cityId, id = createdPoi.Id }, createdPoi);
         }
 
 
@@ -112,14 +114,23 @@ namespace CityInfo.Controllers
                 return BadRequest(ModelState);
             }
 
-            var city = GetCityOrNothing(cityId);
-            if (city == null) return NotFound(new { CityId = cityId });
+            if (!mCityRepo.DoesCityExist(cityId))
+            {
+                return NotFound(new { CityId = cityId });
+            }
 
-            var existingPoi = city.Poi.FirstOrDefault(p => p.Id == id);
-            if (existingPoi == null) return NotFound(new { PoiId = id });
+            var existingPoi = mCityRepo.GetPoi(cityId, id);
+            if (existingPoi == null)
+            {
+                return NotFound(new { PoiId = id });
+            }
 
-            existingPoi.Name = poi.Name;
-            existingPoi.Description = poi.Description;
+            Mapper.Map(poi, existingPoi);
+
+            if (!mCityRepo.Save())
+            {
+                return StatusCode(500, "Problem occured while saving to the database.");
+            }
 
             return NoContent();
         }
@@ -133,23 +144,32 @@ namespace CityInfo.Controllers
                 return BadRequest();
             }
 
-            var city = GetCityOrNothing(cityId);
-            if (city == null) return NotFound(new { CityId = cityId });
+            if (!mCityRepo.DoesCityExist(cityId))
+            {
+                return NotFound(new { CityId = cityId });
+            }
 
-            var existingPoi = city.Poi.FirstOrDefault(p => p.Id == id);
-            if (existingPoi == null) return NotFound(new { PoiId = id });
+            var existingPoi = mCityRepo.GetPoi(cityId, id);
+            if (existingPoi == null)
+            {
+                return NotFound(new { PoiId = id });
+            }
 
-            var patched = new PoiUpdateDto { Name = existingPoi.Name, Description = existingPoi.Description };
+            var patched = Mapper.Map<PoiUpdateDto>(existingPoi);
             patch.ApplyTo(patched, ModelState);
-            TryValidateModel(patched);
 
+            TryValidateModel(patched);
             if (! ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            existingPoi.Name = patched.Name;
-            existingPoi.Description = patched.Description;
+            Mapper.Map(patched, existingPoi);
+
+            if (!mCityRepo.Save())
+            {
+                return StatusCode(500, "Problem occured while saving to the database.");
+            }
 
             return NoContent();
         }
@@ -158,14 +178,26 @@ namespace CityInfo.Controllers
         [HttpDelete("{cityId}/poi/{id}")]
         public IActionResult DeletePoi(int cityId, int id)
         {
-            var city = GetCityOrNothing(cityId);
-            if (city == null) return NotFound(new { CityId = cityId });
+            if (!mCityRepo.DoesCityExist(cityId))
+            {
+                return NotFound(new { CityId = cityId });
+            }
 
-            var existingPoi = city.Poi.FirstOrDefault(p => p.Id == id);
-            if (existingPoi == null) return NotFound(new { PoiId = id });
+            var existingPoi = mCityRepo.GetPoi(cityId, id);
+            if (existingPoi == null)
+            {
+                return NotFound(new { PoiId = id });
+            }
 
-            city.Poi.Remove(existingPoi);
+            mCityRepo.DeletePoi(existingPoi);
+
+            if (!mCityRepo.Save())
+            {
+                return StatusCode(500, "Problem occured while saving to the database.");
+            }
+
             mSender.Send("POI deleted", $"POI {existingPoi.Id} '{existingPoi.Name}' was deleted.");
+
             return NoContent();
         }
 
