@@ -8,7 +8,8 @@ using System.Linq;
 namespace CityInfo.Controllers
 {
     [Route("api/cities")]
-    public class CitiesController : Controller
+    [ApiController]
+    public class CitiesController : ControllerBase
     {
         #region Fields
 

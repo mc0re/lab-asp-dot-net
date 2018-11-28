@@ -12,7 +12,8 @@ using System.Linq;
 namespace CityInfo.Controllers
 {
     [Route("api/cities")]
-    public class PoiController : Controller
+    [ApiController]
+    public class PoiController : ControllerBase
     {
         #region Fields
 
