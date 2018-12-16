@@ -6,22 +6,32 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SwaggerLab.Controllers
 {
+    /// <summary>
+    /// Sample controller.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        // GET api/values
+        /// <summary>
+        /// Get all values.
+        /// </summary>
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/values/5
+
+        /// <summary>
+        /// Get a single value.
+        /// </summary>
+        /// <param name="id">Value ID</param>
+        /// <param name="format">Format of the value</param>
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public ActionResult<string> GetValue(int id, string format = "none")
         {
-            return "value";
+            return $"value{id}-{format}";
         }
 
         // POST api/values
