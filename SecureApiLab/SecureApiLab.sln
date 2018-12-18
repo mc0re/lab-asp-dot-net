@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28407.52
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureApiLab", "SecureApiLab\SecureApiLab.csproj", "{2233B47B-0A23-4980-A54D-D05903BD1195}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2233B47B-0A23-4980-A54D-D05903BD1195}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2233B47B-0A23-4980-A54D-D05903BD1195}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2233B47B-0A23-4980-A54D-D05903BD1195}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2233B47B-0A23-4980-A54D-D05903BD1195}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E523D1E2-5BB4-4072-A120-6F5A48F9524D}
+	EndGlobalSection
+EndGlobal
