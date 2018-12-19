@@ -36,8 +36,9 @@ namespace SecureApiLab.Controllers
         {
         }
 
-        // DELETE api/values/5
+
         [HttpDelete("{id}")]
+        [Authorize(Policy = "Admin")]
         public void Delete(int id)
         {
         }

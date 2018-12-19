@@ -58,6 +58,9 @@ namespace SecureApiLab
                     };
                     opt.SaveToken = true;
                 });
+            services.AddAuthorization(opt =>
+                opt.AddPolicy("Admin", p => p.RequireClaim("admin", "true"))
+            );
         }
 
 
