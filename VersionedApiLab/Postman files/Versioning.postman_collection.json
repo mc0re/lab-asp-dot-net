@@ -1,0 +1,93 @@
+{
+	"info": {
+		"_postman_id": "312924d5-7ec6-45a5-a540-7f7a59580533",
+		"name": "Versioning",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "String values",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Requested-With",
+						"value": "XMLHttpRequest",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtaWtlIiwianRpIjoiNjFjMzYxMmItMjk4Ni00ODZlLTkwYzAtMmNhMjFmNWJiZDY2IiwiZ2l2ZW5fbmFtZSI6Im1pa2UiLCJleHAiOjE1NDUxNzM3NzgsImlzcyI6Imh0dHA6Ly9uaWtpdGlucy5kayIsImF1ZCI6Imh0dHA6Ly9uaWtpdGlucy5kayJ9.cdyxvpMvsTCK4gRd1mXBht_ja0RDVwyodoO8wT7iU4g",
+						"type": "text"
+					},
+					{
+						"key": "x-ver",
+						"value": "1.2",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8088/api/values?api-ver=1.0",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"api",
+						"values"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "1.2",
+							"disabled": true
+						},
+						{
+							"key": "api-ver",
+							"value": "1.0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Random",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-ver",
+						"value": "1.2",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8088/api/random",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"api",
+						"random"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
